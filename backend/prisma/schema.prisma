@@ -20,11 +20,12 @@ model Items {
   id String @id @default(uuid())
   name String
   price Int
-  amountInStock Int
+  priceBought Int
   description String
-  createdDate DateTime @default(now())
-  order   Orders @relation(fields: [orderId], references: [id])
-  orderId Int
+  amountInStock Int
+  created DateTime @default(now())
+  order   Orders? @relation(fields: [orderId], references: [id])
+  orderId Int?
 }
 
 model Orders {
@@ -33,5 +34,6 @@ model Orders {
   total Int
   items Items[]
   createdDate DateTime @default(now())
-  paymentMethod PaymentMethod 
+  paymentMethod PaymentMethod
 }
+

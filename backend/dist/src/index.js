@@ -7,7 +7,6 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const itemsRoute_1 = require("./Routes/itemsRoute");
 const orderRoute_1 = require("./Routes/orderRoute");
-const errorHandler_1 = __importDefault(require("./Middlewear/errorHandler"));
 const morgan = require("morgan");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -15,7 +14,6 @@ const port = process.env.PORT || 3000;
 app.use(morgan("dev"));
 app.use("/items", itemsRoute_1.itemRouter);
 app.use("/orders", orderRoute_1.orderRouter);
-app.use(errorHandler_1.default);
 app.get("/", (req, res) => {
     res.json({ data: "Welcome" });
 });
