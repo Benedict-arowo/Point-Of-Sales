@@ -6,7 +6,12 @@ import {
 	getItems,
 	patchItem,
 } from "../Controller/itemsController";
+import Wrapper from "../Middlewear/wrapper";
 export const itemRouter = Router();
 
-itemRouter.route("/").get(getItems).post(addItem);
-itemRouter.route("/:id").get(getItem).patch(patchItem).delete(deleteItem);
+itemRouter.route("/").get(Wrapper(getItems)).post(Wrapper(addItem));
+itemRouter
+	.route("/:id")
+	.get(Wrapper(getItem))
+	.patch(Wrapper(patchItem))
+	.delete(Wrapper(deleteItem));
