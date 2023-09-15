@@ -16,13 +16,19 @@ enum PaymentMethod {
   TRANSFER
 }
 
+enum CategoryList {
+  FOOD
+  DRINK
+  GAMES
+}
 model Items {
   id String @id @default(uuid())
   name String
   price Int
-  priceBought Int
-  description String
-  amountInStock Int
+  priceBought Int?
+  category CategoryList?
+  description String?
+  amountInStock Int?
   created DateTime @default(now())
   order   Orders? @relation(fields: [orderId], references: [id])
   orderId Int?
