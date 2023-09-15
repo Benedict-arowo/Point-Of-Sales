@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { itemRouter } from "./Routes/itemsRoute";
 import { orderRouter } from "./Routes/orderRoute";
 import errorHandler from "./Middlewear/errorHandler";
-
+import bodyParser from "body-parser";
 const morgan = require("morgan");
 dotenv.config();
 
@@ -11,6 +11,8 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(morgan("dev"));
+app.use(bodyParser.json());
+
 app.use("/items", itemRouter);
 app.use("/orders", orderRouter);
 app.use(errorHandler);
