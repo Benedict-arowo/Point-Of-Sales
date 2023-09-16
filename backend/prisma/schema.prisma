@@ -21,25 +21,33 @@ enum CategoryList {
   DRINK
   GAMES
 }
+
+enum reorderLevel {
+  HIGH
+  MEDIUM
+  LOW
+}
+
 model Items {
-  id String @id @default(uuid())
-  name String
-  price Int
-  priceBought Int?
-  category CategoryList?
-  description String?
-  amountInStock Int?
-  created DateTime @default(now())
-  order   Orders? @relation(fields: [orderId], references: [id])
-  orderId Int?
+  id           String        @id @default(uuid())
+  name         String
+  description  String?
+  pricePerUnit Int
+  priceBought  Int
+  category     CategoryList?
+  unitsInStock Int
+  reorderLevel reorderLevel
+  orderId      Int?
+  order        Orders?       @relation(fields: [orderId], references: [id])
+  created      DateTime      @default(now())
+  updated      DateTime      @updatedAt
 }
 
 model Orders {
-  id Int @id @default(autoincrement())
-  name String
-  total Int
-  items Items[]
-  createdDate DateTime @default(now())
+  id            Int           @id @default(autoincrement())
+  name          String
+  total         Int
+  items         Items[]
+  createdDate   DateTime      @default(now())
   paymentMethod PaymentMethod
 }
-
