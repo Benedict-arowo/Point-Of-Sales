@@ -4,13 +4,16 @@ import { itemRouter } from "./Routes/itemsRoute";
 import { orderRouter } from "./Routes/orderRoute";
 import errorHandler from "./Middlewear/errorHandler";
 import bodyParser from "body-parser";
-const morgan = require("morgan");
+import cors from "cors";
+import morgan from "morgan";
+
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(morgan("dev"));
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/items", itemRouter);
