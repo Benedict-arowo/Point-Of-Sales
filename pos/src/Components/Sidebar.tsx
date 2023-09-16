@@ -61,21 +61,12 @@ const Sidebar = (props: Props) => {
 	const CartDisplay = () => {
 		// console.log(Cart);
 		return Cart.map((cartItem: Item) => {
-			const { amountInCart, imageLink, name, price, id } = cartItem;
+			const { amountInCart, name, pricePerUnit, id } = cartItem;
 			return (
 				<div
 					key={id}
 					className="flex flex-row justify-between items-center px-4 py-1 h-24">
-					<div className="flex flex-row gap-2 items-center">
-						<img
-							className="w-24 aspect-auto"
-							src={imageLink}
-							alt="An image of jollof rice."
-						/>
-						<h6 className="font-bold text-lg text-center">
-							{name}
-						</h6>
-					</div>
+					<h6 className="font-bold text-lg text-center">{name}</h6>
 					<div className="flex flex-row gap-2 items-center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +98,7 @@ const Sidebar = (props: Props) => {
 							/>
 						</svg>
 					</div>
-					<span className="font-bold">&#8358; {price}</span>
+					<span className="font-bold">&#8358; {pricePerUnit}</span>
 				</div>
 			);
 		});
@@ -118,7 +109,7 @@ const Sidebar = (props: Props) => {
 		setTotalPrice(() => {
 			let initialValue: number = 0;
 			Cart.forEach((item) => {
-				initialValue += item.amountInCart * item.price;
+				initialValue += item.amountInCart * item.pricePerUnit;
 			});
 			return initialValue;
 		});
