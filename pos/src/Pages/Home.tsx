@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../Components/Sidebar.tsx";
-import Icons from "../assets/index.tsx";
 
 export type Item = {
 	id: number;
 	imageLink: string;
-	price: number;
+	pricePerUnit: number;
 	name: string;
 	category: string;
 	amountLeftInStock: number;
@@ -18,49 +17,31 @@ type itemField = {
 	quantity: number;
 };
 
+// enum categoryList {
+// 	FOOD = "FOOD",
+// 	DRINK = "DRINK",
+// 	GAMES = "GAMES",
+// }
+
 const Home = () => {
-	const { jollof_icon } = Icons;
+	useEffect(() => {
+		(async () => {
+			// await fetch("localhost:3000/items")
+			// 	.then((items) => items.json())
+			// 	.then((items) => console.log(items));
+			const response = await fetch("http://localhost:3000/items");
+			const data = await response.json();
+			setItems(() => data.data);
+		})();
 
-	const Items: Item[] = [
-		{
-			id: 1,
-			imageLink:
-				"https://allnigerianfoods.com/wp-content/uploads/fried_rice_recipe.jpg",
-			price: 400,
-			name: "Jollof Rice1",
-			category: "Food",
-			amountLeftInStock: 30,
-			amountInCart: 0,
-		},
-		{
-			id: 2,
-			imageLink: jollof_icon,
-			price: 400,
-			name: "Jollof Rice2",
-			category: "Food",
-			amountLeftInStock: 30,
-			amountInCart: 0,
-		},
-		{
-			id: 3,
-			imageLink: jollof_icon,
-			price: 400,
-			name: "Jollof Rice3",
-			category: "Food",
-			amountLeftInStock: 30,
-			amountInCart: 0,
-		},
-		{
-			id: 4,
-			imageLink: jollof_icon,
-			price: 400,
-			name: "Jollof Rice",
-			category: "Food",
-			amountLeftInStock: 30,
-			amountInCart: 0,
-		},
-	];
+		updateCategoryFilter("");
+		setIsLoading(() => false);
+	}, []);
 
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [searchBar, setSearchBar] = useState("");
+	const [category, setCategory] = useState<string>("");
+	const [Items, setItems] = useState([]);
 	const [cart, setCart] = useState<Item[]>([]);
 	const [showCustomItemMenu, setShowCustomItemMenu] =
 		useState<boolean>(false);
@@ -93,29 +74,60 @@ const Home = () => {
 	};
 
 	const ItemDisplay = () => {
+		let displayingItems;
+		//* For filtering purposes
+		if (searchBar.length > 0) {
+			console.log();
+			displayingItems = Items.filter((item: Item) =>
+				item.name.toLowerCase().startsWith(searchBar.toLowerCase())
+			);
+		} else {
+			displayingItems = Items;
+		}
+
+		if (category) {
+			displayingItems = displayingItems.filter(
+				(item: Item) => item.category === category
+			);
+		}
+		if (displayingItems.length === 0) {
+			return (
+				<div className="text-center">
+					<h6 className="font-bold">Ummmmm...</h6>
+					<p className="font-light">
+						Sorry, I could not find what you're looking for.
+					</p>
+				</div>
+			);
+		}
 		//* Loops over the Items array, for displaying them.
-		// TODO: Add support for filtering.
-		return Items.map((item): JSX.Element => {
-			//TODO: Add description to items.
-			const { id, imageLink, price, name } = item;
+		return displayingItems.map((item): JSX.Element => {
+			const { id, pricePerUnit, name, description, unitsInStock } = item;
+			console.log(item);
 
 			return (
 				<div
 					key={id}
 					onClick={() => addToCart(item)}
 					className="decentShadow bg-white p-3 flex flex-col justify-center items-center gap-2 rounded-md border-2 cursor-pointer h-fit w-60 ">
-					<img className="w-48 aspect-auto" src={imageLink} alt="" />
-					<h5 className="font-bold text-2xl">{name}</h5>
+					{/* <img className="w-48 aspect-auto" src={imageLink} alt="" /> */}
+					<h5 className="font-medium text-2xl">{name}</h5>
 					<p className="text-center font-light text-lg">
-						1Large plate of Jollof Rice, with chicken.
-						{/* TODO: Needs to be replaced with actual item description. */}
+						{description}
 					</p>
-					<span className="mt-6 font-bold text-lg">
-						&#8358; {price}
-					</span>
+					<div className="mt-4 flex flex-row justify-between w-full items-center">
+						<p>In Stock: {unitsInStock}</p>
+						<span className="font-light text-lg">
+							&#8358; {pricePerUnit}
+						</span>
+					</div>
 				</div>
 			);
 		});
+	};
+
+	const updateCategoryFilter = (category: string) => {
+		setCategory(() => category);
 	};
 
 	const addCustomItem = () => {
@@ -151,7 +163,9 @@ const Home = () => {
 		});
 	};
 
-	return (
+	return isLoading ? (
+		<div>Loading...</div>
+	) : (
 		<div className="flex flex-row w-full">
 			<div className="flex-1 relative">
 				{/* Overlay */}
@@ -247,8 +261,10 @@ const Home = () => {
 					<input
 						className="text-gray-500 w-full outline-none"
 						type="text"
-						placeholder="Seach Products..."
+						placeholder="Search Products..."
 						id=""
+						value={searchBar}
+						onChange={(e) => setSearchBar(e.target.value)}
 					/>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -267,17 +283,30 @@ const Home = () => {
 
 				<section className="flex w-full justify-around items-center mt-4">
 					<div className="flex flex-row gap-4 justify-center">
-						<p className="border-2 rounded-lg max-w-fit px-4 py-1 border-[#2D2D2D] bg-background_orange cursor-pointer hover:scale-105 duration-300">
+						<p
+							onClick={() => updateCategoryFilter("")}
+							className="border-2 rounded-lg max-w-fit px-4 py-1 border-[#2D2D2D] bg-background_orange cursor-pointer hover:scale-105 duration-300">
 							All
 						</p>
-						<p className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+						<p
+							onClick={() => updateCategoryFilter("FOOD")}
+							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
 							Foods
 						</p>
-						<p className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+						<p
+							onClick={() => updateCategoryFilter("DRINK")}
+							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
 							Drinks
 						</p>
-						<p className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+						<p
+							onClick={() => updateCategoryFilter("ROOMS")}
+							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
 							Rooms
+						</p>
+						<p
+							onClick={() => updateCategoryFilter("GAMES")}
+							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+							Games
 						</p>
 					</div>
 
