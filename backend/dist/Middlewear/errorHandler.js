@@ -1,7 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const http_status_codes_1 = require("http-status-codes");
+exports.ErrorHandler = void 0;
+class ErrorHandler extends Error {
+    constructor(message, code) {
+        super(message);
+        this.code = code;
+    }
+}
+exports.ErrorHandler = ErrorHandler;
 const errorHandler = (err, req, res, next) => {
-    res.json({ status: "error", error: err.message }).status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR);
+    res.json({ status: "error", error: err.message }).status(err.code);
 };
 exports.default = errorHandler;

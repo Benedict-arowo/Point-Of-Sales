@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteOrder = exports.patchOrder = exports.getOrder = exports.createOrder = exports.getOrders = void 0;
 const prismaClient_1 = __importDefault(require("../DB/prismaClient"));
 const http_status_codes_1 = require("http-status-codes");
+const errorHandler_1 = require("../Middlewear/errorHandler");
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name } = req.params;
     const orders = yield prismaClient_1.default.orders.findMany({
@@ -46,7 +47,7 @@ exports.getOrders = getOrders;
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, paymentMethod, items } = req.body;
     if (!name || !paymentMethod || !items || items.length === 0)
-        throw new Error("Name, PaymentMethod, and Items are all required fields.");
+        throw new errorHandler_1.ErrorHandler("Name, PaymentMethod, and Items are all required fields.", http_status_codes_1.StatusCodes.BAD_REQUEST);
     let total = 0;
     let i = [];
     //* Calculating the total amount, and also arranging the data to be pushed into the database.
@@ -94,7 +95,7 @@ exports.patchOrder = patchOrder;
 const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     if (!id || typeof id != "number")
-        throw new Error("Invalid ID");
+        throw new errorHandler_1.ErrorHandler("Invalid ID", http_status_codes_1.StatusCodes.BAD_REQUEST);
     yield prismaClient_1.default.orders.delete({ where: { id } });
     return res.json({ msg: "success" }).status(http_status_codes_1.StatusCodes.OK);
 });

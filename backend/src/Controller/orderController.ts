@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../DB/prismaClient";
 import { StatusCodes } from "http-status-codes";
 import { Prisma } from "@prisma/client";
+import { ErrorHandler } from "../Middlewear/errorHandler";
 
 type Items = {
 	id: string;
@@ -52,8 +53,9 @@ export const createOrder = async (req: Request, res: Response) => {
 	const { name, paymentMethod, items } = req.body;
 
 	if (!name || !paymentMethod || !items || items.length === 0)
-		throw new Error(
-			"Name, PaymentMethod, and Items are all required fields."
+		throw new ErrorHandler(
+			"Name, PaymentMethod, and Items are all required fields.",
+			StatusCodes.BAD_REQUEST
 		);
 
 	let total = 0;
@@ -103,7 +105,8 @@ export const patchOrder = (req: Request, res: Response) => {
 
 export const deleteOrder = async (req: Request, res: Response) => {
 	const { id } = req.params;
-	if (!id || typeof id != "number") throw new Error("Invalid ID");
+	if (!id || typeof id != "number")
+		throw new ErrorHandler("Invalid ID", StatusCodes.BAD_REQUEST);
 	await prisma.orders.delete({ where: { id } });
 	return res.json({ msg: "success" }).status(StatusCodes.OK);
 };

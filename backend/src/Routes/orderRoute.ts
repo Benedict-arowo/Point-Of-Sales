@@ -6,8 +6,13 @@ import {
 	getOrders,
 	patchOrder,
 } from "../Controller/orderController";
+import Wrapper from "../Middlewear/wrapper";
 
 export const orderRouter = Router();
 
-orderRouter.route("/").get(getOrders).post(createOrder);
-orderRouter.route("/:id").get(getOrder).patch(patchOrder).delete(deleteOrder);
+orderRouter.route("/").get(Wrapper(getOrders)).post(Wrapper(createOrder));
+orderRouter
+	.route("/:id")
+	.get(Wrapper(getOrder))
+	.patch(Wrapper(patchOrder))
+	.delete(Wrapper(deleteOrder));
