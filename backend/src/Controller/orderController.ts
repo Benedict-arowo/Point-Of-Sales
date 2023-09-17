@@ -14,7 +14,9 @@ type Items = {
 };
 
 type i = {
-	id: string;
+	itemId: string;
+	quantity: number;
+	total: number;
 };
 
 export const getOrders = async (req: Request, res: Response) => {
@@ -31,8 +33,14 @@ export const getOrders = async (req: Request, res: Response) => {
 			items: {
 				select: {
 					id: true,
-					unitsInStock: true,
-					created: true,
+					quantity: true,
+					item: {
+						select: {
+							name: true,
+							pricePerUnit: true,
+							unitsInStock: true,
+						},
+					},
 				},
 			},
 		},
@@ -43,10 +51,20 @@ export const getOrders = async (req: Request, res: Response) => {
 export const createOrder = async (req: Request, res: Response) => {
 	const { name, paymentMethod, items } = req.body;
 
+	if (!name || !paymentMethod || !items || items.length === 0)
+		throw new Error(
+			"Name, PaymentMethod, and Items are all required fields."
+		);
+
 	let total = 0;
 	let i: i[] = [];
+	//* Calculating the total amount, and also arranging the data to be pushed into the database.
 	items.forEach((item: Items) => {
-		i.push({ id: item.id });
+		i.push({
+			itemId: item.id,
+			quantity: item.quantity,
+			total: item.quantity * item.pricePerUnit,
+		});
 		total += item.quantity * item.pricePerUnit;
 	});
 
@@ -56,7 +74,9 @@ export const createOrder = async (req: Request, res: Response) => {
 			paymentMethod,
 			total,
 			items: {
-				connect: i,
+				createMany: {
+					data: i,
+				},
 			},
 		},
 	});

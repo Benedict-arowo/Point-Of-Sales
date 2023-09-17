@@ -45,10 +45,10 @@ const Menu = () => {
 				</NavLink>
 
 				<NavLink
-					to={"./Bills"}
+					to={"./Orders"}
 					className="flex flex-col items-center cursor-pointer justify-center hover:text-text_orange transition-all duration-300 w-[90px] h-[80px]">
 					<Pocket_icon />
-					<h4 className="">Bills</h4>
+					<h4 className="">Orders</h4>
 				</NavLink>
 
 				<NavLink

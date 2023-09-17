@@ -28,8 +28,14 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             items: {
                 select: {
                     id: true,
-                    unitsInStock: true,
-                    created: true,
+                    quantity: true,
+                    item: {
+                        select: {
+                            name: true,
+                            pricePerUnit: true,
+                            unitsInStock: true,
+                        },
+                    },
                 },
             },
         },
@@ -39,10 +45,17 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getOrders = getOrders;
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, paymentMethod, items } = req.body;
+    if (!name || !paymentMethod || !items || items.length === 0)
+        throw new Error("Name, PaymentMethod, and Items are all required fields.");
     let total = 0;
     let i = [];
+    //* Calculating the total amount, and also arranging the data to be pushed into the database.
     items.forEach((item) => {
-        i.push({ id: item.id });
+        i.push({
+            itemId: item.id,
+            quantity: item.quantity,
+            total: item.quantity * item.pricePerUnit,
+        });
         total += item.quantity * item.pricePerUnit;
     });
     const order = yield prismaClient_1.default.orders.create({
@@ -51,7 +64,9 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             paymentMethod,
             total,
             items: {
-                connect: i,
+                createMany: {
+                    data: i,
+                },
             },
         },
     });
