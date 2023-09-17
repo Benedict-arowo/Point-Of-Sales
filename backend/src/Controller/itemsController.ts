@@ -50,13 +50,9 @@ export const addItem = async (req: Req, res: Response) => {
 
 export const getItem = async (req: Req, res: Response) => {
 	const { id } = req.params;
-	const { includeOrders } = req.query;
 	const item = await prisma.items.findUnique({
 		where: {
 			id,
-		},
-		include: {
-			order: includeOrders === "true" ? true : false,
 		},
 	});
 

@@ -43,13 +43,9 @@ const addItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.addItem = addItem;
 const getItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { includeOrders } = req.query;
     const item = yield prismaClient_1.default.items.findUnique({
         where: {
             id,
-        },
-        include: {
-            order: includeOrders === "true" ? true : false,
         },
     });
     return res.json({ msg: "success", data: item }).status(http_status_codes_1.StatusCodes.OK);
