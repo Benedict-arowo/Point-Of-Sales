@@ -37,25 +37,27 @@ model Items {
   category     CategoryList?
   unitsInStock Int
   reorderLevel reorderLevel
-  orderId      Int?
-  order        Orders?       @relation(fields: [orderId], references: [id])
   created      DateTime      @default(now())
   updated      DateTime      @updatedAt
-  item Item?
+  itemInstances ItemInstance[]
 }
 
-model Item {
-  id     String  @id 
-  item   Items @relation(fields: [id], references: [id])
+model ItemInstance {
+  id     String @id @default(uuid())
+  itemId String
+  item   Items @relation(fields: [itemId], references: [id])
   quantity Int @default(1)
   total Int @default(0)
+  orderId      Int
+  order        Orders       @relation(fields: [orderId], references: [id])
+  created DateTime @default(now())
 }
 
 model Orders {
   id            Int           @id @default(autoincrement())
   name          String
   total         Int
-  items         Items[]
+  items         ItemInstance[]
   createdDate   DateTime      @default(now())
   paymentMethod PaymentMethod
 }
