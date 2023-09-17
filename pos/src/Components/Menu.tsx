@@ -15,14 +15,14 @@ const Menu = () => {
 	return (
 		<div
 			id="Sidebar"
-			className="w-full h-full flex flex-col justify-between items-center py-8">
+			className="w-28 min-w-full h-full flex flex-col justify-between items-center py-8">
 			<span
 				className="text-text_orange cursor-pointer text-4xl"
 				id="Logo">
 				POS
 			</span>
 
-			<section className="font-[poppins] flex gap-2 flex-col items-center">
+			<section className="font-[poppins] flex gap-2 flex-col items-center min-w-full">
 				<NavLink
 					to={"./"}
 					className="flex flex-col items-center cursor-pointer justify-center hover:text-text_orange transition-all duration-300 w-[90px] h-[80px]">
