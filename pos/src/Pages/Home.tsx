@@ -8,7 +8,7 @@ export type Item = {
 	name: string;
 	category: string;
 	amountLeftInStock: number;
-	amountInCart: number;
+	quantity: number;
 };
 
 type itemField = {
@@ -25,6 +25,7 @@ type itemField = {
 
 const Home = () => {
 	useEffect(() => {
+		setIsLoading(() => true);
 		(async () => {
 			// await fetch("localhost:3000/items")
 			// 	.then((items) => items.json())
@@ -59,13 +60,12 @@ const Home = () => {
 
 			if (index === -1) {
 				//* If the item does not exist yet.
-				newItem.amountInCart = 1;
+				newItem.quantity = 1;
 				Items = [...cartItems, newItem];
 				return Items;
 			} else {
 				//* Item exists already, and we need to update the amount
-				cartItems[index].amountInCart =
-					cartItems[index].amountInCart + 1;
+				cartItems[index].quantity = cartItems[index].quantity + 1;
 				Items = [...cartItems];
 
 				return Items;
@@ -73,6 +73,7 @@ const Home = () => {
 		});
 	};
 
+	// TODO: Better support for loading
 	const ItemDisplay = () => {
 		let displayingItems;
 		//* For filtering purposes
@@ -103,7 +104,6 @@ const Home = () => {
 		//* Loops over the Items array, for displaying them.
 		return displayingItems.map((item): JSX.Element => {
 			const { id, pricePerUnit, name, description, unitsInStock } = item;
-			console.log(item);
 
 			return (
 				<div
@@ -136,7 +136,7 @@ const Home = () => {
 		// 	return [
 		// 		...prev,
 		// 		{
-		// 			amountInCart: customItemField.quantity,
+		// 			quantity: customItemField.quantity,
 		// 			id: 0,
 		// 			amountLeftInStock: 0,
 		// 			category: "",

@@ -23,7 +23,7 @@ const Sidebar = (props: Props) => {
 		setCart((currItems: Item[]) => {
 			const x = currItems.map((item: Item) => {
 				if (item.id === id) {
-					return { ...item, amountInCart: item.amountInCart + 1 };
+					return { ...item, quantity: item.quantity + 1 };
 				} else return item;
 			});
 			return x;
@@ -34,12 +34,12 @@ const Sidebar = (props: Props) => {
 		setCart((currItems: Item[]) => {
 			const newItemList: Item[] = [];
 			currItems.forEach((item: Item) => {
-				if (item.id === id && item.amountInCart <= 1) {
+				if (item.id === id && item.quantity <= 1) {
 					return;
 				} else if (item.id === id) {
 					newItemList.push({
 						...item,
-						amountInCart: item.amountInCart - 1,
+						quantity: item.quantity - 1,
 					});
 				} else {
 					newItemList.push(item);
@@ -61,7 +61,7 @@ const Sidebar = (props: Props) => {
 	const CartDisplay = () => {
 		// console.log(Cart);
 		return Cart.map((cartItem: Item) => {
-			const { amountInCart, name, pricePerUnit, id } = cartItem;
+			const { quantity, name, pricePerUnit, id } = cartItem;
 			return (
 				<div
 					key={id}
@@ -82,7 +82,7 @@ const Sidebar = (props: Props) => {
 								d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
 							/>
 						</svg>
-						<span className="font-bold">{amountInCart}</span>
+						<span className="font-bold">{quantity}</span>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -104,12 +104,30 @@ const Sidebar = (props: Props) => {
 		});
 	};
 
+	const SaveOrder = () => {
+		const data = {
+			items: Cart,
+			paymentMethod: paymentMethod,
+			name: "Test",
+		};
+		console.log(data);
+		fetch("http://localhost:3000/orders", {
+			method: "POST",
+			body: JSON.stringify(data),
+			headers: {
+				"Content-type": "application/json; charset=UTF-8",
+			},
+		})
+			.then((response) => response.json())
+			.then((responseData) => console.log(responseData));
+	};
+
 	//** Maps over all the items in the cart and adds up and returns the total price.
 	useEffect(() => {
 		setTotalPrice(() => {
 			let initialValue: number = 0;
 			Cart.forEach((item) => {
-				initialValue += item.amountInCart * item.pricePerUnit;
+				initialValue += item.quantity * item.pricePerUnit;
 			});
 			return initialValue;
 		});
@@ -246,6 +264,7 @@ const Sidebar = (props: Props) => {
 					</button>
 					<button
 						type="button"
+						onClick={SaveOrder}
 						className="font-semibold text-white bg-green-700 px-8 py-2 rounded-md hover:scale-105 transition-all duration-300">
 						Print Bill
 					</button>
