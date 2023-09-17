@@ -105,6 +105,8 @@ const Sidebar = (props: Props) => {
 	};
 
 	const SaveOrder = () => {
+		if (!paymentMethod || Cart.length === 0) return;
+		// TODO: Support for customers nume
 		const data = {
 			items: Cart,
 			paymentMethod: paymentMethod,
@@ -120,6 +122,7 @@ const Sidebar = (props: Props) => {
 		})
 			.then((response) => response.json())
 			.then((responseData) => console.log(responseData));
+		clearOrder();
 	};
 
 	//** Maps over all the items in the cart and adds up and returns the total price.
