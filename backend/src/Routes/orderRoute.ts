@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-	addOrder,
+	createOrder,
 	deleteOrder,
 	getOrder,
 	getOrders,
@@ -9,5 +9,5 @@ import {
 
 export const orderRouter = Router();
 
-orderRouter.route("/").get(getOrders).post(addOrder);
+orderRouter.route("/").get(getOrders).post(createOrder);
 orderRouter.route("/:id").get(getOrder).patch(patchOrder).delete(deleteOrder);

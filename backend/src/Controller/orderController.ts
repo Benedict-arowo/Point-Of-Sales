@@ -1,6 +1,21 @@
 import { Request, Response } from "express";
 import prisma from "../DB/prismaClient";
 import { StatusCodes } from "http-status-codes";
+import { Prisma } from "@prisma/client";
+
+type Items = {
+	id: string;
+	imageLink: string;
+	pricePerUnit: number;
+	name: string;
+	category: string;
+	amountLeftInStock: number;
+	quantity: number;
+};
+
+type i = {
+	id: string;
+};
 
 export const getOrders = async (req: Request, res: Response) => {
 	const { name } = req.params;
@@ -16,8 +31,7 @@ export const getOrders = async (req: Request, res: Response) => {
 			items: {
 				select: {
 					id: true,
-					price: true,
-					amountInStock: true,
+					unitsInStock: true,
 					created: true,
 				},
 			},
@@ -26,15 +40,23 @@ export const getOrders = async (req: Request, res: Response) => {
 	return res.json({ msg: "success", data: orders }).status(200);
 };
 
-export const addOrder = async (req: Request, res: Response) => {
+export const createOrder = async (req: Request, res: Response) => {
 	const { name, paymentMethod, items } = req.body;
+
+	let total = 0;
+	let i: i[] = [];
+	items.forEach((item: Items) => {
+		i.push({ id: item.id });
+		total += item.quantity * item.pricePerUnit;
+	});
+
 	const order = await prisma.orders.create({
 		data: {
 			name,
 			paymentMethod,
-			total: 1,
+			total,
 			items: {
-				connect: items,
+				connect: i,
 			},
 		},
 	});
@@ -44,8 +66,15 @@ export const addOrder = async (req: Request, res: Response) => {
 		.status(StatusCodes.CREATED);
 };
 
-export const getOrder = (req: Request, res: Response) => {
-	return res.json({ data: "GET Order" }).status(201);
+export const getOrder = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	const data = await prisma.orders.findUnique({
+		where: { id: parseInt(id) },
+		include: {
+			items: true,
+		},
+	});
+	return res.json({ msg: "success", data }).status(StatusCodes.OK);
 };
 
 export const patchOrder = (req: Request, res: Response) => {
