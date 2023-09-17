@@ -41,6 +41,14 @@ model Items {
   order        Orders?       @relation(fields: [orderId], references: [id])
   created      DateTime      @default(now())
   updated      DateTime      @updatedAt
+  item Item?
+}
+
+model Item {
+  id     String  @id 
+  item   Items @relation(fields: [id], references: [id])
+  quantity Int @default(1)
+  total Int @default(0)
 }
 
 model Orders {

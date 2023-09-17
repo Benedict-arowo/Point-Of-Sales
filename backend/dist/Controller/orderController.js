@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOrder = exports.patchOrder = exports.getOrder = exports.addOrder = exports.getOrders = void 0;
+exports.deleteOrder = exports.patchOrder = exports.getOrder = exports.createOrder = exports.getOrders = void 0;
 const prismaClient_1 = __importDefault(require("../DB/prismaClient"));
 const http_status_codes_1 = require("http-status-codes");
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -28,8 +28,7 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             items: {
                 select: {
                     id: true,
-                    price: true,
-                    amountInStock: true,
+                    unitsInStock: true,
                     created: true,
                 },
             },
@@ -38,15 +37,21 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json({ msg: "success", data: orders }).status(200);
 });
 exports.getOrders = getOrders;
-const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, paymentMethod, items } = req.body;
+    let total = 0;
+    let i = [];
+    items.forEach((item) => {
+        i.push({ id: item.id });
+        total += item.quantity * item.pricePerUnit;
+    });
     const order = yield prismaClient_1.default.orders.create({
         data: {
             name,
             paymentMethod,
-            total: 1,
+            total,
             items: {
-                connect: items,
+                connect: i,
             },
         },
     });
@@ -55,10 +60,17 @@ const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         .json({ msg: "success", data: order })
         .status(http_status_codes_1.StatusCodes.CREATED);
 });
-exports.addOrder = addOrder;
-const getOrder = (req, res) => {
-    return res.json({ data: "GET Order" }).status(201);
-};
+exports.createOrder = createOrder;
+const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const data = yield prismaClient_1.default.orders.findUnique({
+        where: { id: parseInt(id) },
+        include: {
+            items: true,
+        },
+    });
+    return res.json({ msg: "success", data }).status(http_status_codes_1.StatusCodes.OK);
+});
 exports.getOrder = getOrder;
 const patchOrder = (req, res) => {
     return res.json({ data: "PATCH Order" }).status(201);
