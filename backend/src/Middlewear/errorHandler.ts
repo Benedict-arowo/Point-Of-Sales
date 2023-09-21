@@ -15,7 +15,9 @@ const errorHandler = (
 	res: Response,
 	next: NextFunction
 ) => {
-	res.json({ status: "error", error: err.message }).status(err.code);
+	// Todo: Check if error is instance of ErrorHandler before sending out a response.
+	// console.log(err);
+	res.status(err.code).json({ status: "error", error: err.message });
 };
 
 export default errorHandler;
