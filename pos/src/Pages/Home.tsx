@@ -24,15 +24,17 @@ type itemField = {
 // }
 
 const Home = () => {
+	const fetchItems = async () => {
+		const response = await fetch(
+			"http://localhost:3000/items?sellable=true"
+		);
+		const data = await response.json();
+		setItems(() => data.data);
+	};
 	useEffect(() => {
 		setIsLoading(() => true);
 		(async () => {
-			// await fetch("localhost:3000/items")
-			// 	.then((items) => items.json())
-			// 	.then((items) => console.log(items));
-			const response = await fetch("http://localhost:3000/items");
-			const data = await response.json();
-			setItems(() => data.data);
+			await fetchItems();
 		})();
 
 		updateCategoryFilter("");
@@ -166,7 +168,7 @@ const Home = () => {
 	return isLoading ? (
 		<div>Loading...</div>
 	) : (
-		<div className="flex flex-row w-full">
+		<div className="flex flex-row w-full h-screen overflow-y-auto">
 			<div className="flex-1 relative">
 				{/* Overlay */}
 				<section
@@ -336,7 +338,11 @@ const Home = () => {
 			<div
 				id="Sidebar-2"
 				className="w-1/3 bg-white border-l-2 border-light_gray">
-				<Sidebar Cart={cart} setCart={setCart} />
+				<Sidebar
+					Cart={cart}
+					setCart={setCart}
+					fetchItems={fetchItems}
+				/>
 			</div>
 		</div>
 	);

@@ -1,10 +1,11 @@
 // import Icons from "../assets/index.tsx";
 import { useEffect, useState } from "react";
-
+import toast from "react-hot-toast";
 import { Item } from "../Pages/Home";
 
 type Props = {
 	Cart: Item[];
+	fetchItems: () => Promise<void>;
 	setCart: React.Dispatch<React.SetStateAction<Item[]>>;
 };
 
@@ -15,9 +16,10 @@ enum paymentMethodList {
 }
 
 const Sidebar = (props: Props) => {
-	const { Cart, setCart } = props;
+	const { Cart, setCart, fetchItems } = props;
 	const [totalPrice, setTotalPrice] = useState<number>(0);
 	const [paymentMethod, setPaymentMethod] = useState<paymentMethodList>();
+	const [ordersName, setOrdersName] = useState<string>("");
 
 	const incrementAmount = (id: number) => {
 		setCart((currItems: Item[]) => {
@@ -105,24 +107,42 @@ const Sidebar = (props: Props) => {
 	};
 
 	const SaveOrder = () => {
-		if (!paymentMethod || Cart.length === 0) return;
+		if (Cart.length === 0) {
+			return toast.error(
+				"You can't place an order without having any items!"
+			);
+		}
+
+		if (!paymentMethod) {
+			return toast.error("Select a payment method!");
+		}
+
 		// TODO: Support for customers nume
 		const data = {
 			items: Cart,
 			paymentMethod: paymentMethod,
-			name: "Test",
+			name: ordersName.length > 0 ? ordersName : undefined,
 		};
-		console.log(data);
-		fetch("http://localhost:3000/orders", {
+		// TODO: Support for toast
+		const savingOrder = fetch("http://localhost:3000/orders", {
 			method: "POST",
 			body: JSON.stringify(data),
 			headers: {
 				"Content-type": "application/json; charset=UTF-8",
 			},
-		})
-			.then((response) => response.json())
-			.then((responseData) => console.log(responseData));
-		clearOrder();
+		});
+
+		toast.promise(savingOrder, {
+			loading: "Saving order...",
+			success: (data: Response) => {
+				// Clears the order, in preparation for a new order.
+				if (!data.ok) throw new Error();
+				clearOrder();
+				fetchItems();
+				return "Successfully saved order.";
+			},
+			error: "Error trying to save order.",
+		});
 	};
 
 	//** Maps over all the items in the cart and adds up and returns the total price.
@@ -138,16 +158,22 @@ const Sidebar = (props: Props) => {
 	// const { jollof_icon } = Icons;
 
 	return (
-		<div className="flex flex-col justify-between h-screen py-6">
+		<div className="flex flex-col justify-between h-screen pb-4 pt-2">
 			<header className="flex w-full flex-row justify-between px-2">
-				<section className="flex gap-2">
-					<h3 className="font-bold">Order Number:</h3>
-					<span className="text-text_orange font-medium">
-						#300102LP
-					</span>
+				<section className="flex flex-col">
+					<h3 className="font-semibold text-lg">Name:</h3>
+					<input
+						type="text"
+						name=""
+						id=""
+						placeholder="Order's name..."
+						className="border focus:border-2 duration-300 focus:border-gray-700 px-2 py-1 text-lg outline-none"
+						value={ordersName}
+						onChange={(e) => setOrdersName(e.target.value)}
+					/>
 				</section>
 				<button
-					className="text-[#FF3636] bg-[#FD4D4D61] px-4 py-1 rounded-lg text-sm font-semibold cursor-pointer hover:scale-105 duration-300 transition-all"
+					className="text-[#FF3636] bg-[#FD4D4D61] px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer hover:scale-105 duration-300 transition-all h-fit"
 					onClick={clearOrder}>
 					Clear Order
 				</button>
