@@ -9,6 +9,7 @@ export interface Req extends Request {
 		name?: string;
 		price?: string;
 		includeOrders?: string;
+		sellable?: string;
 	};
 	body: {
 		name?: string;
@@ -27,14 +28,17 @@ const isNumber = (value: any) => {
 };
 
 export const getItems = async (req: Req, res: Response) => {
-	const { name } = req.query;
-
+	const { name, sellable } = req.query;
 	const items = await prisma.items.findMany({
 		where: {
 			name: {
 				startsWith: name,
 				mode: "insensitive",
 			},
+			isOutOfStock: sellable === "true" ? false : undefined,
+		},
+		orderBy: {
+			name: "asc",
 		},
 	});
 

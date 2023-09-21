@@ -22,13 +22,17 @@ const isNumber = (value) => {
     return typeof value === "number";
 };
 const getItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name } = req.query;
+    const { name, sellable } = req.query;
     const items = yield prismaClient_1.default.items.findMany({
         where: {
             name: {
                 startsWith: name,
                 mode: "insensitive",
             },
+            isOutOfStock: sellable === "true" ? false : undefined,
+        },
+        orderBy: {
+            name: "asc",
         },
     });
     return res
