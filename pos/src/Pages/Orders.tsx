@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "timeago.js";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
 
 type Order = {
 	id: string;
@@ -7,7 +9,7 @@ type Order = {
 	items: Items[];
 	paymentMethod: string;
 	total: number;
-	createdDate: string;
+	createdDate: Date;
 };
 
 type Items = {
@@ -26,6 +28,9 @@ type Items = {
 const Orders = () => {
 	const [orders, setOrders] = useState<Order[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [searchBar, setSearchBar] = useState<string>("");
+	const [tab, setTab] = useState<string>("");
+	// const [startDate, setStartDate] = useState<Date>(new Date());
 
 	useEffect(() => {
 		setIsLoading(() => true);
@@ -34,10 +39,44 @@ const Orders = () => {
 			.then((data) => setOrders(data.data))
 			.finally(() => setIsLoading(() => false));
 		// TODO: Error handling
+		setTab(() => "all");
 	}, []);
 
 	const DisplayOrders = () => {
-		return orders.map((order: Order) => {
+		let displayingOrders;
+		if (searchBar) {
+			displayingOrders = orders.filter((order: Order) => {
+				if (searchBar.startsWith("#")) {
+					return order.id.toString().startsWith(searchBar.slice(1));
+				} else {
+					return (
+						(order.name &&
+							order.name
+								.toLowerCase()
+								.startsWith(searchBar.toLowerCase())) ||
+						order.id.toString().startsWith(searchBar)
+					);
+				}
+			});
+		} else {
+			displayingOrders = orders;
+		}
+
+		if (tab !== "all")
+			displayingOrders = displayingOrders.filter(
+				(order: Order) =>
+					order.paymentMethod.toLowerCase() === tab.toLowerCase()
+			);
+
+		// TODO: Support date filtering.
+		// if (startDate)
+		// 	displayingOrders = displayingOrders.filter(
+		// 		(order: Order) =>
+		// 			new Date(order.createdDate).getDay() >
+		// 			new Date(startDate).getDay()
+		// 	);
+
+		return displayingOrders.map((order: Order) => {
 			const { name, paymentMethod, id, items, total, createdDate } =
 				order;
 
@@ -70,6 +109,9 @@ const Orders = () => {
 					className="bg-white p-4 orderContainer w-80 flex flex-col justify-between h-fit">
 					<header>
 						<h4 className="font-semibold text-3xl">Order #{id}</h4>
+						<p className="text-sm uppercase font-semibold">
+							{name}
+						</p>
 						<div className="flex flex-row justify-between">
 							<span className="text-gray-400 font-light text-lg">
 								{format(createdDate)}
@@ -106,15 +148,15 @@ const Orders = () => {
 	return isLoading ? (
 		<div>Loading...</div>
 	) : (
-		<div className="bg-[#ffffffbb] px-4 w-full">
+		<div className="bg-[#ffffffbb] px-4 w-full h-screen overflow-y-scroll">
 			<div className="px-2 py-2 mt-4 mx-auto max-w-xl flex flex-row justify-between border-2 border-[#8A8A8A] rounded-sm">
 				<input
 					className="text-gray-500 w-full outline-none"
 					type="text"
 					placeholder="Search Orders..."
 					id=""
-					// value={searchBar}
-					// onChange={(e) => setSearchBar(e.target.value)}
+					value={searchBar}
+					onChange={(e) => setSearchBar(e.target.value)}
 				/>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -129,6 +171,47 @@ const Orders = () => {
 						d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
 					/>
 				</svg>
+			</div>
+
+			<div className="lg:px-8 mt-6">
+				<div className="flex flex-row gap-4 items-center justify-center text-gray-700 font-medium text-sm">
+					<p
+						className={`px-6 py-1 border hover:bg-text_orange hover:text-white duration-300 rounded-md hover:scale-105 cursor-pointer ${
+							tab === "all" ? "bg-text_orange text-white" : ""
+						}`}
+						onClick={() => setTab("all")}>
+						All
+					</p>
+					<p
+						className={`px-6 py-1 border hover:bg-text_orange hover:text-white duration-300 rounded-md hover:scale-105 cursor-pointer ${
+							tab === "cash" ? "bg-text_orange text-white" : ""
+						}`}
+						onClick={() => setTab("cash")}>
+						Cash
+					</p>
+					<p
+						className={`px-6 py-1 border hover:bg-text_orange hover:text-white duration-300 rounded-md hover:scale-105 cursor-pointer ${
+							tab === "transfer"
+								? "bg-text_orange text-white"
+								: ""
+						}`}
+						onClick={() => setTab("transfer")}>
+						Transfer
+					</p>
+					<p
+						className={`px-6 py-1 border hover:bg-text_orange hover:text-white duration-300 rounded-md hover:scale-105 cursor-pointer ${
+							tab === "card" ? "bg-text_orange text-white" : ""
+						}`}
+						onClick={() => setTab("card")}>
+						Card
+					</p>
+				</div>
+				{/* TODO: Add date sorting */}
+				{/* <DatePicker
+					selected={startDate}
+					className="border-2 px-2 py-1 border-gray-400"
+					onChange={(date: Date) => setStartDate(date)}
+				/> */}
 			</div>
 
 			<section className="my-12 mx-6">
