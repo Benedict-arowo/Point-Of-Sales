@@ -37,6 +37,9 @@ model Items {
   category     CategoryList?
   unitsInStock Int
   reorderLevel reorderLevel
+  isOutOfStock Boolean
+  initialQuantity Int
+  estimatedProfit Int
   created      DateTime      @default(now())
   updated      DateTime      @updatedAt
   itemInstances ItemInstance[]
@@ -55,7 +58,7 @@ model ItemInstance {
 
 model Orders {
   id            Int           @id @default(autoincrement())
-  name          String
+  name          String?
   total         Int
   items         ItemInstance[]
   createdDate   DateTime      @default(now())
