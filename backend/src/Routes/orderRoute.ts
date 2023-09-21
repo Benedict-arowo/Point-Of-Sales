@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-	createOrder,
 	deleteOrder,
 	getOrder,
 	getOrders,
 	patchOrder,
-} from "../Controller/orderController";
+} from "../Controller/Orders/orderController";
+import { createOrder } from "../Controller/Orders/createOrder";
 import Wrapper from "../Middlewear/wrapper";
 
 export const orderRouter = Router();

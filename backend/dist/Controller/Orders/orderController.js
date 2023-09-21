@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteOrder = exports.patchOrder = exports.getOrder = exports.getOrders = void 0;
-const prismaClient_1 = __importDefault(require("../DB/prismaClient"));
+const prismaClient_1 = __importDefault(require("../../DB/prismaClient"));
 const http_status_codes_1 = require("http-status-codes");
-const errorHandler_1 = require("../Middlewear/errorHandler");
+const errorHandler_1 = require("../../Middlewear/errorHandler");
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name } = req.params;
     const orders = yield prismaClient_1.default.orders.findMany({
