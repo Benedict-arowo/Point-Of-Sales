@@ -22,13 +22,17 @@ const isNumber = (value) => {
     return typeof value === "number";
 };
 const getItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name } = req.query;
+    const { name, sellable } = req.query;
     const items = yield prismaClient_1.default.items.findMany({
         where: {
             name: {
                 startsWith: name,
                 mode: "insensitive",
             },
+            isOutOfStock: sellable === "true" ? false : undefined,
+        },
+        orderBy: {
+            name: "asc",
         },
     });
     return res
@@ -43,13 +47,9 @@ const addItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.addItem = addItem;
 const getItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { includeOrders } = req.query;
     const item = yield prismaClient_1.default.items.findUnique({
         where: {
             id,
-        },
-        include: {
-            order: includeOrders === "true" ? true : false,
         },
     });
     return res.json({ msg: "success", data: item }).status(http_status_codes_1.StatusCodes.OK);

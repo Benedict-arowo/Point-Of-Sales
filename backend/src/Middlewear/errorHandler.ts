@@ -1,5 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { StatusCodes } from "http-status-codes";
+
+export class ErrorHandler extends Error {
+	code: number;
+
+	constructor(message: string, code: number) {
+		super(message);
+		this.code = code;
+	}
+}
 
 const errorHandler = (
 	err: any,
@@ -7,9 +15,9 @@ const errorHandler = (
 	res: Response,
 	next: NextFunction
 ) => {
-	res.json({ status: "error", error: err.message }).status(
-		StatusCodes.INTERNAL_SERVER_ERROR
-	);
+	// Todo: Check if error is instance of ErrorHandler before sending out a response.
+	// console.log(err);
+	res.status(err.code).json({ status: "error", error: err.message });
 };
 
 export default errorHandler;

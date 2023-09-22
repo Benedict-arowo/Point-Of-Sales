@@ -5,7 +5,7 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import Inventory from "./Pages/Inventory.tsx";
 import Reports from "./Pages/Reports.tsx";
 import Settings from "./Pages/Settings.tsx";
-import Bills from "./Pages/Bills.tsx";
+import Orders from "./Pages/Orders.tsx";
 import Login from "./Pages/Login.tsx";
 
 const App = () => {
@@ -14,7 +14,7 @@ const App = () => {
 			<Route element={<MenuElement />}>
 				<Route path="/" element={<Home />} />
 				<Route path="/inventory" element={<Inventory />} />
-				<Route path="/bills" element={<Bills />} />
+				<Route path="/orders" element={<Orders />} />
 				<Route path="/settings" element={<Settings />} />
 				<Route path="/reports" element={<Reports />} />
 			</Route>
