@@ -41,100 +41,23 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             },
         },
     });
-    return res.json({ msg: "success", data: orders }).status(200);
+    return res.json({ msg: "success", data: orders }).status(http_status_codes_1.StatusCodes.OK);
 });
 exports.getOrders = getOrders;
-// export const createOrder = async (req: Request, res: Response) => {
-// 	const { name, paymentMethod, items } = req.body;
-// 	const itemsForCreation: i[] = [];
-// 	let total = 0;
-// 	if (!paymentMethod || !items || items.length === 0)
-// 		throw new ErrorHandler(
-// 			"PaymentMethod, and Items are all required fields.",
-// 			StatusCodes.BAD_REQUEST
-// 		);
-// 	//* Calculating the total amount, and also arranging the data to be pushed into the database.
-// 	for (let i = 0; i < items.length; i++) {
-// 		const item = items[i];
-// 		const savedVersionOfItem = await prisma.items.findUnique({
-// 			where: {
-// 				id: item.id,
-// 			},
-// 			select: {
-// 				unitsInStock: true,
-// 			},
-// 		});
-// 		if (!savedVersionOfItem) {
-// 			throw new ErrorHandler(
-// 				"This item does not exist in the database.",
-// 				StatusCodes.BAD_REQUEST
-// 			);
-// 		}
-// 		if (savedVersionOfItem?.unitsInStock > item.quantity) {
-// 			itemsForCreation.push({
-// 				itemId: item.id,
-// 				quantity: item.quantity,
-// 				total: item.quantity * item.pricePerUnit,
-// 			});
-// 			total += item.quantity * item.pricePerUnit;
-// 		} else {
-// 			console.log(item.quantity);
-// 			throw new ErrorHandler(
-// 				`${item.name} is currently low in stock.`,
-// 				StatusCodes.BAD_REQUEST
-// 			);
-// 		}
-// 	}
-// 	if (itemsForCreation.length === 0)
-// 		throw new ErrorHandler(
-// 			ReasonPhrases.BAD_REQUEST,
-// 			StatusCodes.BAD_REQUEST
-// 		);
-// 	const order = await prisma.orders.create({
-// 		data: {
-// 			name,
-// 			paymentMethod,
-// 			total,
-// 			items: {
-// 				createMany: {
-// 					data: itemsForCreation,
-// 				},
-// 			},
-// 		},
-// 		include: {
-// 			items: {
-// 				include: {
-// 					item: {
-// 						select: {
-// 							unitsInStock: true,
-// 						},
-// 					},
-// 				},
-// 			},
-// 		},
-// 	});
-// 	order.items.forEach(async (item) => {
-// 		// reduce the number of unitsInStock
-// 		await prisma.items.update({
-// 			where: {
-// 				id: item.itemId,
-// 			},
-// 			data: {
-// 				unitsInStock: item.item.unitsInStock - item.quantity,
-// 			},
-// 		});
-// 	});
-// 	// TODO: Calculate the total price.
-// 	return res
-// 		.json({ msg: "success", data: order })
-// 		.status(StatusCodes.CREATED);
-// };
 const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const data = yield prismaClient_1.default.orders.findUnique({
         where: { id: parseInt(id) },
         include: {
-            items: true,
+            items: {
+                select: {
+                    id: true,
+                    itemId: true,
+                    quantity: true,
+                    total: true,
+                    created: true,
+                },
+            },
         },
     });
     return res.json({ msg: "success", data }).status(http_status_codes_1.StatusCodes.OK);

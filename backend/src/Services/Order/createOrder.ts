@@ -3,7 +3,7 @@ import prisma from "../../DB/prismaClient";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { ErrorHandler } from "../../Middlewear/errorHandler";
 
-type i = {
+type item = {
 	itemId: string;
 	quantity: number;
 	total: number;
@@ -11,7 +11,7 @@ type i = {
 
 export const createOrder = async (req: Request, res: Response) => {
 	const { name, paymentMethod, items } = req.body;
-	const itemsForCreation: i[] = [];
+	const itemsForCreation: item[] = [];
 	let total = 0;
 
 	//* Checking if all required fields are provided.
@@ -41,6 +41,7 @@ export const createOrder = async (req: Request, res: Response) => {
 			);
 		}
 
+		//* Item out of stock.
 		if (savedVersionOfItem.unitsInStock === 0) {
 			throw new ErrorHandler(
 				`${item.name} is currently out of stock.`,
@@ -64,7 +65,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
 	if (itemsForCreation.length === 0)
 		throw new ErrorHandler(
-			ReasonPhrases.BAD_REQUEST,
+			"No items were provided for this order.",
 			StatusCodes.BAD_REQUEST
 		);
 
@@ -93,7 +94,7 @@ export const createOrder = async (req: Request, res: Response) => {
 	});
 
 	order.items.forEach(async (item) => {
-		// reduce the number of unitsInStock
+		//* Reduce the number of unitsInStock, and checks if an item is out of stock.
 		await prisma.items.update({
 			where: {
 				id: item.itemId,
@@ -109,7 +110,6 @@ export const createOrder = async (req: Request, res: Response) => {
 		});
 	});
 
-	// TODO: Calculate the total price.
 	return res
 		.json({ msg: "success", data: order })
 		.status(StatusCodes.CREATED);

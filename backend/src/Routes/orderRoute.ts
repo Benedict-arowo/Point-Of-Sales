@@ -4,8 +4,8 @@ import {
 	getOrder,
 	getOrders,
 	patchOrder,
-} from "../Controller/Orders/orderController";
-import { createOrder } from "../Controller/Orders/createOrder";
+} from "../Controller/orderController";
+import { createOrder } from "../Services/Order/createOrder";
 import Wrapper from "../Middlewear/wrapper";
 
 export const orderRouter = Router();
