@@ -40,6 +40,9 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             },
         },
+        orderBy: {
+            id: "desc",
+        },
     });
     return res.json({ msg: "success", data: orders }).status(http_status_codes_1.StatusCodes.OK);
 });
@@ -63,9 +66,17 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json({ msg: "success", data }).status(http_status_codes_1.StatusCodes.OK);
 });
 exports.getOrder = getOrder;
-const patchOrder = (req, res) => {
-    return res.json({ data: "PATCH Order" }).status(201);
-};
+const patchOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { params: { id }, body: { name, paymentMethod, items }, } = req;
+    const data = yield prismaClient_1.default.orders.update({
+        where: { id: parseInt(id) },
+        data: {
+            name,
+            paymentMethod,
+        },
+    });
+    return res.json({ msg: "success", data }).status(201);
+});
 exports.patchOrder = patchOrder;
 const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;

@@ -38,6 +38,9 @@ export const getOrders = async (req: Request, res: Response) => {
 				},
 			},
 		},
+		orderBy: {
+			id: "desc",
+		},
 	});
 	return res.json({ msg: "success", data: orders }).status(StatusCodes.OK);
 };
@@ -61,8 +64,21 @@ export const getOrder = async (req: Request, res: Response) => {
 	return res.json({ msg: "success", data }).status(StatusCodes.OK);
 };
 
-export const patchOrder = (req: Request, res: Response) => {
-	return res.json({ data: "PATCH Order" }).status(201);
+export const patchOrder = async (req: Request, res: Response) => {
+	const {
+		params: { id },
+		body: { name, paymentMethod, items },
+	} = req;
+
+	const data = await prisma.orders.update({
+		where: { id: parseInt(id) },
+		data: {
+			name,
+			paymentMethod,
+		},
+	});
+
+	return res.json({ msg: "success", data }).status(201);
 };
 
 export const deleteOrder = async (req: Request, res: Response) => {
