@@ -11,6 +11,7 @@ type item = {
 
 export const createOrder = async (req: Request, res: Response) => {
 	const { name, paymentMethod, items } = req.body;
+	const paymentMethodList = ["CASH", "TRANSFER", "CARD"];
 	const itemsForCreation: item[] = [];
 	let total = 0;
 
@@ -20,6 +21,14 @@ export const createOrder = async (req: Request, res: Response) => {
 			"PaymentMethod, and Items are all required fields.",
 			StatusCodes.BAD_REQUEST
 		);
+
+	//* Checking if a valid payment method has been provided.
+	if (!paymentMethodList.includes(paymentMethod.toUpperCase())) {
+		throw new ErrorHandler(
+			"The provided payment method is not a valid payment method.",
+			StatusCodes.BAD_REQUEST
+		);
+	}
 
 	//* Calculating the total amount, and also arranging the data to be pushed into the database.
 	for (let i = 0; i < items.length; i++) {
