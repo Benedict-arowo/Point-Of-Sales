@@ -12,6 +12,7 @@ Coming Soon....
 -   [ ] Inventory management system
 -   [ ] Proper logging system
 -   [ ] Fully functional tests
+-   [ ] Item Restock feature
 
 ### Running Locally
 
