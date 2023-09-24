@@ -105,7 +105,7 @@ const Home = () => {
 		}
 		//* Loops over the Items array, for displaying them.
 		return displayingItems.map((item): JSX.Element => {
-			const { id, pricePerUnit, name, description, unitsInStock } = item;
+			const { id, pricePerUnit, name, unitsInStock } = item;
 
 			return (
 				<div
@@ -114,9 +114,6 @@ const Home = () => {
 					className="decentShadow bg-white p-3 flex flex-col justify-center items-center gap-2 rounded-md border-2 cursor-pointer h-fit w-60 ">
 					{/* <img className="w-48 aspect-auto" src={imageLink} alt="" /> */}
 					<h5 className="font-medium text-2xl">{name}</h5>
-					<p className="text-center font-light text-lg">
-						{description}
-					</p>
 					<div className="mt-4 flex flex-row justify-between w-full items-center">
 						<p>In Stock: {unitsInStock}</p>
 						<span className="font-light text-lg">
@@ -129,6 +126,7 @@ const Home = () => {
 	};
 
 	const updateCategoryFilter = (category: string) => {
+		console.log(category);
 		setCategory(() => category);
 	};
 
@@ -287,27 +285,47 @@ const Home = () => {
 					<div className="flex flex-row gap-4 justify-center">
 						<p
 							onClick={() => updateCategoryFilter("")}
-							className="border-2 rounded-lg max-w-fit px-4 py-1 border-[#2D2D2D] bg-background_orange cursor-pointer hover:scale-105 duration-300">
+							className={`border-2 rounded-lg max-w-fit px-4 py-1 hover:scale-105 duration-300 ${
+								category === ""
+									? "bg-text_orange border-[#2D2D2D] text-white scale-105"
+									: " cursor-pointer"
+							}`}>
 							All
 						</p>
 						<p
 							onClick={() => updateCategoryFilter("FOOD")}
-							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+							className={`border rounded-lg max-w-fit px-4 py-1 cursor-pointer hover:scale-105 duration-300 ${
+								category === "FOOD"
+									? "bg-text_orange border-[#2D2D2D] text-white scale-105"
+									: " cursor-pointer"
+							}`}>
 							Foods
 						</p>
 						<p
 							onClick={() => updateCategoryFilter("DRINK")}
-							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+							className={`border rounded-lg max-w-fit px-4 py-1 hover:scale-105 duration-30 ${
+								category === "DRINK"
+									? "bg-text_orange border-[#2D2D2D] text-white scale-105"
+									: " cursor-pointer"
+							}`}>
 							Drinks
 						</p>
 						<p
 							onClick={() => updateCategoryFilter("ROOMS")}
-							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+							className={`border rounded-lg max-w-fit px-4 py-1 hover:scale-105 duration-300 ${
+								category === "ROOMS"
+									? "bg-text_orange border-[#2D2D2D] text-white scale-105"
+									: " cursor-pointer"
+							}`}>
 							Rooms
 						</p>
 						<p
 							onClick={() => updateCategoryFilter("GAMES")}
-							className="border rounded-lg max-w-fit px-4 py-1 border-[#D6D6D6] bg-white cursor-pointer hover:scale-105 duration-300">
+							className={`border rounded-lg max-w-fit px-4 py-1 hover:scale-105 duration-300 ${
+								category === "GAMES"
+									? "bg-text_orange border-[#2D2D2D] text-white scale-105"
+									: " cursor-pointer"
+							}`}>
 							Games
 						</p>
 					</div>
@@ -330,8 +348,10 @@ const Home = () => {
 					</div>
 				</section>
 
-				<section className="px-16 mt-8 flex flex-row flex-wrap gap-12 overflow-auto max-h-full justify-center">
-					<ItemDisplay />
+				<section className="px-16 mt-8 h-full">
+					<div className="flex flex-row flex-wrap gap-12 justify-center">
+						<ItemDisplay />
+					</div>
 				</section>
 			</div>
 			{/* Left Sidebar */}
