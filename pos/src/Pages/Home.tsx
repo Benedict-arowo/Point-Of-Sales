@@ -126,7 +126,6 @@ const Home = () => {
 	};
 
 	const updateCategoryFilter = (category: string) => {
-		console.log(category);
 		setCategory(() => category);
 	};
 
