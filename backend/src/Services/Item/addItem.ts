@@ -20,7 +20,7 @@ const addItem = async (req: Req, res: Response) => {
 
 	if (!name || !pricePerUnit || !priceBought || !unitsInStock)
 		throw new ErrorHandler(
-			"name, price, priceBought, and unitsInStock are all required fields.",
+			"name, pricePerUnit, priceBought, and unitsInStock are all required fields.",
 			StatusCodes.BAD_REQUEST
 		);
 

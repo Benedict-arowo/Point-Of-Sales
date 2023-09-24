@@ -20,7 +20,7 @@ const addItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // TODO: Add permission support
     const CategoryList = ["FOOD", "DRINK", "GAMES"];
     if (!name || !pricePerUnit || !priceBought || !unitsInStock)
-        throw new errorHandler_1.ErrorHandler("name, price, priceBought, and unitsInStock are all required fields.", http_status_codes_1.StatusCodes.BAD_REQUEST);
+        throw new errorHandler_1.ErrorHandler("name, pricePerUnit, priceBought, and unitsInStock are all required fields.", http_status_codes_1.StatusCodes.BAD_REQUEST);
     if (category && !CategoryList.includes(category.toUpperCase()))
         throw new errorHandler_1.ErrorHandler("Invalid Category.", http_status_codes_1.StatusCodes.BAD_REQUEST);
     if (typeof pricePerUnit !== "number" || typeof priceBought !== "number")
