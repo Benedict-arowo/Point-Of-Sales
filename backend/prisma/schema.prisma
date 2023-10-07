@@ -28,6 +28,18 @@ enum reorderLevel {
   LOW
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+model User {
+  id String @id @default(uuid())
+  username String @unique
+  password String
+  role Role @default(USER)
+  refreshToken String?
+}
+
 model Items {
   id           String        @id @default(uuid())
   name         String

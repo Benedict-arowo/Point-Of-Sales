@@ -6,6 +6,7 @@ import errorHandler from "./Middlewear/errorHandler";
 import bodyParser from "body-parser";
 import cors from "cors";
 import morgan from "morgan";
+import { userRouter } from "./Routes/userRoute";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 
 app.use("/items", itemRouter);
 app.use("/orders", orderRouter);
+app.use("/user", userRouter);
 app.use(errorHandler);
 
 app.get("/", (req: Request, res: Response) => {

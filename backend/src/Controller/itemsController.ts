@@ -18,7 +18,9 @@ export interface Req extends Request {
 		unitsInStock?: number;
 		pricePerUnit?: number;
 		priceBought?: number;
-		category: CategoryList;
+		category?: CategoryList;
+		username?: string;
+		password?: string;
 	};
 }
 
